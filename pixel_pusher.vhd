@@ -18,6 +18,12 @@
 -- 
 ----------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
+-- addr 18 bits for (480) x 480 resolution 
+-- 640 x 480 = 19 bits addr
+-- r - 5 , b - 5 , g - 6 => 8 bits each 
+--------------------------------------------------------------------------------
+
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -38,9 +44,9 @@ entity pixel_pusher is
         signal vid : in std_logic;
         signal pixel : in std_logic_vector (7 downto 0);
         signal hcount : in std_logic_vector (9 downto 0);
-        signal r : out std_logic_vector (4 downto 0);
-        signal b : out std_logic_vector (4 downto 0);
-        signal g : out std_logic_vector (5 downto 0);
+        signal r : out std_logic_vector (7 downto 0);
+        signal b : out std_logic_vector (7 downto 0);
+        signal g : out std_logic_vector (7 downto 0);
         signal addr : out std_logic_vector (17 downto 0)
   );
 end pixel_pusher;
@@ -59,9 +65,9 @@ if rising_edge (clk) then
         
         addr_count <= std_logic_vector (unsigned (addr_count) + 1 );
         
-        r <= pixel (7 downto 5) & "00";
-        g <= pixel (4 downto 2) & "000";
-        b <= pixel (1 downto 0) & "000";
+        r <= pixel (7 downto 5) & "00000";
+        g <= pixel (4 downto 2) & "00000";
+        b <= pixel (1 downto 0) & "000000";
         
     else 
         r <= (others => '0');

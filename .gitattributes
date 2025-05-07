@@ -1,0 +1,3 @@
+# VHDL files
+*.vhd text eol=lf
+*.vhdl text eol=lf
