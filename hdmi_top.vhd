@@ -116,7 +116,10 @@ signal vga_b_sig : std_logic_vector (7 downto 0);
 
 signal arst_sig : std_logic := '0';
 begin
+    
     hdmi_tx_hpd <= 1;
+    hdmi_tx_scl <= '0';
+    hdmi_tx_sda <= '0';
 pic : picture port map (
     clka => clk,
     addra => addr_sig,
@@ -157,7 +160,7 @@ hdmi : rgb2dvi_0 port map (
     TMDS_Data_p => hdmi_tx_p,
     TMDS_Data_n => hdmi_tx_n,
     aRst => arst_sig,
-    vid_pData => vga_r_sig & vga_g_sig & vga_b_sig,
+    vid_pData => vga_r_sig & vga_b_sig & vga_g_sig,
     vid_pVDE => vid_sig,
     vid_pHSync => hs_sig,
     vid_pVSync => vs_sig,
