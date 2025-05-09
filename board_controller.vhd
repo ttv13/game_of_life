@@ -112,11 +112,17 @@ begin
     return count;
 end function;
 
+signal first_start : integer := 0;
 begin
 
 board_gen : process (clk) begin 
 
 if rising_edge (clk) then 
+
+    if first_start = 0 then 
+        board_out <= (others => '0');
+        first_start <= first_start + 1;
+    end if;
 
     vs_sig <= en;
     vs_en <= vs_sig and (not en); --Falling edge for vs (1 and not 0)
