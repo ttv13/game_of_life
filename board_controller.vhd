@@ -34,7 +34,7 @@ use IEEE.NUMERIC_STD.ALL;
 --------------------------------------------------------------------------------
 -- controls 2d array representing the play board (8x8) (wraps)
 -- when play en then should play the game of life 
--- when paused needs to handle btns for draw function xor ? 
+-- when paused needs to handle btns for draw function
 -- 
 -- Outputs flatten board 8x8 = 64 
 --------------------------------------------------------------------------------
@@ -42,7 +42,10 @@ entity board_controller is
   Port (clk : in std_logic; 
         en : in std_logic; -- tie it to vs in vga so board gets updated and sent to vga once frame is ready 
         rst : in std_logic;
-        
+        pause_sw : in std_logic;
+        kypd_btn : in std_logic_vector(15 downto 0);
+        cursor_row : out integer range 0 to 7;
+        cursor_col : out integer range 0 to 7;
         board_out : out std_logic_vector(63 downto 0)
 );
 end board_controller;
@@ -56,6 +59,9 @@ architecture Behavioral of board_controller is
     signal next_board : board_type := (others => (others => '0'));
 
     signal vs_sig , vs_en : std_logic;
+
+    signal  draw_row, draw_col : integer range 0 to width := 0;
+    
 --------------------------------------------------------------------------------
 -- Wraping Function for indexes beyond width
 --------------------------------------------------------------------------------
@@ -115,6 +121,9 @@ end function;
 signal first_start : integer := 0;
 begin
 
+    cursor_row <= draw_row;
+    cursor_col <= draw_col;
+
 board_gen : process (clk) begin 
 
 if rising_edge (clk) then 
@@ -131,8 +140,8 @@ if rising_edge (clk) then
         board <= (others => (others => '0'));
         next_board <= (others => (others => '0'));
     
-    elsif (vs_en = '1') then 
-
+    elsif (vs_en = '1' and pause_sw = '0') then -- Play computation 
+ 
         for i in 0 to width loop --steps through 8x8 board
             for j in 0 to width loop
 
@@ -159,7 +168,34 @@ if rising_edge (clk) then
         end loop; -- row
         
         board <= next_board;    -- update board to next board 
+
+    elsif  (vs_en = '1' and pause_sw = '1') then -- Draw function
+
+        -- moving cursor 
+        if kypd_btn (1) = '1' then --2 up 
+
+            draw_row <= wrap (draw_row - 1);
+
+        elsif kypd_btn (4) = '1' then -- 5 down 
+            draw_row <= wrap (draw_row + 1);
+        end if;
+
+        if kypd_btn (3) = '1' then --4 left
+
+            draw_col <= wrap (draw_col - 1);
+
+        elsif kypd_btn (5) = '1' then -- 6 right 
+            draw_col <= wrap (draw_col + 1);
+        end if;
+
+        if kypd_btn (0) = '1' then -- 1 toggle 
+
+            board (draw_row) (draw_col) <= not board (draw_row) (draw_col);
+        end if;
+
+        next_board <= board;
     end if; -- reset
+
 end if; -- rising edge
 end process board_gen;
 

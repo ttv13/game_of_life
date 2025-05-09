@@ -43,7 +43,12 @@ entity game_pixels_vga is
         vs : in std_logic;
         vid : in std_logic;
         hcount : in std_logic_vector (9 downto 0);
-        vcount : in std_logic_vector(9 downto 0)
+        vcount : in std_logic_vector(9 downto 0);
+
+        cursor_row : in integer range 0 to 7;
+        cursor_col : in integer range 0 to 7;
+        pause_sw : in std_logic;
+
         r : out std_logic_vector (7 downto 0);
         b : out std_logic_vector (7 downto 0);
         g : out std_logic_vector (7 downto 0);
@@ -109,8 +114,15 @@ if rising_edge (clk) then
             variable col : integer := lx / tile; 
             variable row : integer := ly / tile; 
             variable index : integer := row * 8
+            variable cursor_location : boolean := (row = cursor_row) and (col  = cursor_col);
 
-            if board_sig (index) = '1' then 
+
+            if pause_sw = '1' and cursor_location then 
+
+                r <= "11111111";
+                g <= "00000000";
+                b <= "11111111";
+            elsif board_sig (index) = '1' then 
                 r <= "11111111";
                 g <= "00000000";
                 b <= "00000000";
@@ -119,6 +131,8 @@ if rising_edge (clk) then
                 g <= "00000000";
                 b <= "00000000";
             end if;
+
+            
         end if;
     else 
         r <= (others => '0');
