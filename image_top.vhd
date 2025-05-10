@@ -33,11 +33,13 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity image_top is
   Port (signal clk : in std_logic;
-        signal vga_hs : out std_logic;
-        signal vga_vs : out std_logic;
-        signal vga_r : out std_logic_vector (4 downto 0);
-        signal vga_b : out std_logic_vector (4 downto 0);
-        signal vga_g : out std_logic_vector (5 downto 0)
+
+        signal VGA_HS_O : out std_logic;
+        signal VGA_VS_O : out std_logic;
+        signal VGA_R : out std_logic_vector (3 downto 0);
+        signal VGA_B : out std_logic_vector (3 downto 0);
+        signal VGA_G : out std_logic_vector (3 downto 0)
+
   );
 end image_top;
 
@@ -56,16 +58,16 @@ component clock_div port (
 );
 end component;
 
-component pixel_pusher port (
+component vga_pixel_pusher port (
         signal clk : in std_logic;
         signal en : in std_logic;
         signal vs : in std_logic;
         signal vid : in std_logic;
         signal pixel : in std_logic_vector (7 downto 0);
         signal hcount : in std_logic_vector (9 downto 0);
-        signal r : out std_logic_vector (4 downto 0);
-        signal b : out std_logic_vector (4 downto 0);
-        signal g : out std_logic_vector (5 downto 0);
+        signal r : out std_logic_vector (3 downto 0);
+        signal b : out std_logic_vector (3 downto 0);
+        signal g : out std_logic_vector (3 downto 0);
         signal addr : out std_logic_vector (17 downto 0)
 );
 end component;
@@ -101,16 +103,16 @@ clk_div : clock_div port map (
     div => en_sig
 );
 
-pixel : pixel_pusher port map (
+pixel : vga_pixel_pusher port map (
     clk => clk,
     en => en_sig,
     vs => vs_sig,
     vid => vid_sig,
     pixel => douta_sig,
     hcount => hcount_sig,
-    r => vga_r,
-    b => vga_b,
-    g => vga_g,
+    r => VGA_R,
+    b => VGA_B,
+    g => VGA_G,
     addr => addr_sig
 );
 
@@ -120,9 +122,9 @@ vga : vga_ctrl port map (
     hcount => hcount_sig,
     vcount => open ,
     vid => vid_sig,
-    hs => vga_hs,
+    hs => VGA_HS_O,
     vs => vs_sig
 );
 
-vga_vs <= vs_sig;
+VGA_VS_O <= vs_sig;
 end Behavioral;

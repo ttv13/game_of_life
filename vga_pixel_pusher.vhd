@@ -38,9 +38,9 @@ entity pixel_pusher is
         signal vid : in std_logic;
         signal pixel : in std_logic_vector (7 downto 0);
         signal hcount : in std_logic_vector (9 downto 0);
-        signal r : out std_logic_vector (4 downto 0);
-        signal b : out std_logic_vector (4 downto 0);
-        signal g : out std_logic_vector (5 downto 0);
+        signal r : out std_logic_vector (3 downto 0);
+        signal b : out std_logic_vector (3 downto 0);
+        signal g : out std_logic_vector (3 downto 0);
         signal addr : out std_logic_vector (17 downto 0)
   );
 end pixel_pusher;
@@ -59,9 +59,9 @@ if rising_edge (clk) then
         
         addr_count <= std_logic_vector (unsigned (addr_count) + 1 );
         
-        r <= pixel (7 downto 5) & "00";
-        g <= pixel (4 downto 2) & "000";
-        b <= pixel (1 downto 0) & "000";
+        r <= pixel (7 downto 5) & "0";
+        g <= pixel (4 downto 2) & "0";
+        b <= pixel (1 downto 0) & "00";
         
     else 
         r <= (others => '0');
