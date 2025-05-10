@@ -45,7 +45,7 @@ entity vga_pixel_pusher is
   );
 end vga_pixel_pusher;
 
-architecture Behavioral of pixel_pusher is
+architecture Behavioral of vga_pixel_pusher is
 
 signal addr_count : std_logic_vector (17 downto 0) := (others => '0');
 

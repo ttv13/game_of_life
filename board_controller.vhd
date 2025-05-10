@@ -63,6 +63,19 @@ architecture Behavioral of board_controller is
     signal  draw_row, draw_col : integer range 0 to width := 0;
     
 --------------------------------------------------------------------------------
+-- Function to convert single bit to ints 
+--------------------------------------------------------------------------------
+
+function bit2int (b : std_logic) return integer is 
+begin
+
+    if b = '1' then 
+        return 1;
+    else 
+        return 0;
+    end if;
+end function;
+--------------------------------------------------------------------------------
 -- Wraping Function for indexes beyond width
 --------------------------------------------------------------------------------
 
@@ -102,16 +115,16 @@ function count_neighbor (i, j :  integer; game_board : board_type) return intege
 
 begin 
 
-    north := to_integer(Unsigned(game_board( wrap(i-1) )( j )));
-    south := to_integer(Unsigned(game_board( wrap(i+1) )( j )));
-    west := to_integer(Unsigned(game_board( i )( wrap(j-1) )));
-    east := to_integer(Unsigned(game_board( i )( wrap(j+1) )));
+    north := bit2int(game_board( wrap(i-1) )( j ));
+    south := bit2int(game_board(wrap(i+1))(j));
+    west  := bit2int(game_board(i)(wrap(j-1)));
+    east  := bit2int(game_board(i)(wrap(j+1)));
 
-    north_west := to_integer(Unsigned(game_board( wrap(i-1) )( wrap(j-1) )));
-    north_east := to_integer(Unsigned(game_board( wrap(i-1) )( wrap(j+1) )));
+    north_west := bit2int(game_board( wrap(i-1) )( wrap(j-1) ));
+    north_east := bit2int(game_board( wrap(i-1) )( wrap(j+1) ));
 
-    south_west := to_integer(Unsigned(game_board( wrap(i+1) )( wrap(j-1) )));
-    south_east := to_integer(Unsigned(game_board( wrap(i+1) )( wrap(j+1) )));
+    south_west := bit2int(game_board( wrap(i+1) )( wrap(j-1) ));
+    south_east := bit2int(game_board( wrap(i+1) )( wrap(j+1) ));
 
     count :=  north + north_east + north_west + south + south_east + south_west + west + east;
 
@@ -175,23 +188,23 @@ if rising_edge (clk) then
     elsif  (vs_en = '1' and pause_sw = '1') then -- Draw function
 
         -- moving cursor 
-        if kypd_btn (1) = '1' then --2 up 
+        if kypd_btn (6) = '1' then --2 up 
 
             draw_row <= wrap (draw_row - 1);
 
-        elsif kypd_btn (4) = '1' then -- 5 down 
+        elsif kypd_btn (1) = '1' then -- E down 
             draw_row <= wrap (draw_row + 1);
         end if;
 
-        if kypd_btn (3) = '1' then --4 left
+        if kypd_btn (0) = '1' then -- F left
 
             draw_col <= wrap (draw_col - 1);
 
-        elsif kypd_btn (5) = '1' then -- 6 right 
+        elsif kypd_btn (2) = '1' then -- D right 
             draw_col <= wrap (draw_col + 1);
         end if;
 
-        if kypd_btn (0) = '1' then -- 1 toggle 
+        if kypd_btn (7) = '1' then -- 1 toggle 
 
             board (draw_row) (draw_col) <= not board (draw_row) (draw_col);
         end if;
