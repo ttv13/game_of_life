@@ -124,7 +124,10 @@ begin
     cursor_row <= draw_row;
     cursor_col <= draw_col;
 
-board_gen : process (clk) begin 
+board_gen : process (clk) 
+
+    variable neighbor : integer;
+begin 
 
 if rising_edge (clk) then 
 
@@ -145,7 +148,7 @@ if rising_edge (clk) then
         for i in 0 to width loop --steps through 8x8 board
             for j in 0 to width loop
 
-                variable neighbor : integer := count_neighbor (i,j,board);
+                neighbor := count_neighbor (i, j, board);
 
                 if (board (i)(j) = '1') then 
                     

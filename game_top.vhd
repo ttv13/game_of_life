@@ -99,7 +99,7 @@ end component;
 
 component pmod_keypad generic (
     clk_freq : integer := 50_000_000;
-    stable_time : integer := 10;
+    stable_time : integer := 10
 );
     port (
         clk     :  IN     STD_LOGIC;
@@ -119,16 +119,16 @@ signal vs_sig : std_logic;
 signal hcount_sig : std_logic_vector (9 downto 0);
 signal vcount_sig : std_logic_vector (9 downto 0);
 signal vid_sig : std_logic;
-signal vs_sig : std_logic;
+
 
 --board Controller 
-signal cursor_row_sig <= integer range 0 to 7;
-signal cursor_col_sig <= integer range 0 to 7;
-signal board_out_sig <= std_logic_vector (63 downto 0);
+signal cursor_row_sig : integer range 0 to 7;
+signal cursor_col_sig : integer range 0 to 7;
+signal board_out_sig : std_logic_vector (63 downto 0);
 
 
 --kypd 
-signal keys_sig <= std_logic_vector (15 downto 0);
+signal keys_sig : std_logic_vector (15 downto 0);
 
 
 begin
@@ -149,13 +149,13 @@ begin
         vs => vs_sig
     );
 
-    keypad : pmod_keypad generic (
-        clk_freq => 50_000_000;
-        stable_time => 10;
-    );
+    keypad : pmod_keypad generic map (
+        clk_freq => 50_000_000,
+        stable_time => 10
+    )
     port map (
         clk => clk,
-        reset_n => not sw_rst,
+        reset_n => not sw(0),
         rows => kp_rows,
         columns => kp_cols,
         keys => keys_sig
@@ -179,7 +179,13 @@ begin
         vid => vid_sig,
         hcount => hcount_sig,
         vcount => vcount_sig,
-        cursor_row => 
+        cursor_row => cursor_row_sig,
+        cursor_col => cursor_col_sig,
+        pause_sw => sw(1),
+        r => VGA_R,
+        b => VGA_B,
+        g =>  VGA_G,
+        board => board_out_sig
     );
 
     VGA_VS_O <= vs_sig;

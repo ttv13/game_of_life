@@ -31,7 +31,7 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity pixel_pusher is
+entity vga_pixel_pusher is
   Port (signal clk : in std_logic;
         signal en : in std_logic;
         signal vs : in std_logic;
@@ -43,7 +43,7 @@ entity pixel_pusher is
         signal g : out std_logic_vector (3 downto 0);
         signal addr : out std_logic_vector (17 downto 0)
   );
-end pixel_pusher;
+end vga_pixel_pusher;
 
 architecture Behavioral of pixel_pusher is
 

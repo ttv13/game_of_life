@@ -62,9 +62,9 @@ architecture Behavioral of game_pixels_vga is
 
     -- o|o|o|o|o|o|o| --8 cells 
     -- |o|o|o|o|o|o|o| --8 cells 
-    constant cell_size : integer := 40 -- 40x40 px
-    constant border_size : integer := 1 
-    constant board_length : integer := 329 -- 41 * 8 + 1 px side lengths of board 
+    constant cell_size : integer := 40; -- 40x40 px
+    constant border_size : integer := 1;
+    constant board_length : integer := 329; -- 41 * 8 + 1 px side lengths of board 
 
     constant x_start : integer := (640 - board_length) / 2; -- 155
     constant y_start : integer := (480 - board_length) / 2; -- 75
@@ -87,19 +87,27 @@ buffer_select : process (board_selector) begin
         board_sig <= board_ar (0);
     else 
         board_ar(1) <= board;
-        board_sig <= board_ar (1)
+        board_sig <= board_ar (1);
     end if;
 end process buffer_select;
 
-process (clk) begin 
+process (clk) 
+
+    variable lx : integer;
+    variable ly : integer;
+    variable col : integer;
+    variable row : integer;
+    variable index : integer;
+    variable cursor_location : boolean;
+begin 
 
 if rising_edge (clk) then 
 
     if (en = '1' and vid = '1' and unsigned (hcount) >= x_start and unsigned(vcount) >= y_start and unsigned(hcount) <= x_end and unsigned(vcount) <= y_end) then --if currently in grid area 
         
         --find local coordinates 
-        variable lx : integer := hcount - x_start; -- 0-328
-        variable ly : integer := vcount - y_start; -- 0-328
+        lx := to_integer (unsigned (hcount)) - x_start; -- 0-328
+        ly := to_integer (unsigned (vcount)) - y_start; -- 0-328
 
         --Check for border lines 
         if (lx mod 41 = cell_size) or (ly mod 41 = cell_size) or lx = 0 or ly = 0 then
@@ -110,10 +118,10 @@ if rising_edge (clk) then
 
         else --cells 
 
-            variable col : integer := lx / tile; 
-            variable row : integer := ly / tile; 
-            variable index : integer := row * 8
-            variable cursor_location : boolean := (row = cursor_row) and (col  = cursor_col);
+            col := lx / 41;
+            row  := ly / 41;
+            index := row * 8;
+            cursor_location := (row = cursor_row) and (col  = cursor_col);
 
 
             if pause_sw = '1' and cursor_location then 
@@ -140,7 +148,7 @@ if rising_edge (clk) then
     end if; 
     
     if (vs = '0') then -- update board from board controller flip board sign
-        board_selector <= not (board_selector)
+        board_selector <= not (board_selector);
         
     end if;
     
