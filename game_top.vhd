@@ -33,17 +33,20 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity game_top is
   Port (signal clk : in std_logic;
-        signal vga_hs : out std_logic;
-        signal vga_vs : out std_logic;
-        signal vga_r : out std_logic_vector (3 downto 0);
-        signal vga_b : out std_logic_vector (3 downto 0);
-        signal vga_g : out std_logic_vector (3 downto 0)
+        signal sw : in std_logic_vector (1 downto 0);
+
+        signal VGA_HS_O : out std_logic;
+        signal VGA_VS_O : out std_logic;
+        signal VGA_R : out std_logic_vector (3 downto 0);
+        signal VGA_B : out std_logic_vector (3 downto 0);
+        signal VGA_G : out std_logic_vector (3 downto 0);
+
+        signal kp_rows : in std_logic_vector (1 to 4);
+        signal kp_cols : inout std_logic_vector (1 to 4)
   );
 end game_top;
 
 architecture Behavioral of game_top is
-
-
 
 component clock_div port (
         clk : in std_logic;
@@ -51,8 +54,23 @@ component clock_div port (
 );
 end component;
 
-component pixel_pusher port (
+component game_pixels_vga port (
+        clk : in std_logic;
+        en : in std_logic;
+        vs : in std_logic;
+        vid : in std_logic;
+        hcount : in std_logic_vector (9 downto 0);
+        vcount : in std_logic_vector(9 downto 0);
 
+        cursor_row : in integer range 0 to 7;
+        cursor_col : in integer range 0 to 7;
+        pause_sw : in std_logic;
+
+        r : out std_logic_vector (3 downto 0);
+        b : out std_logic_vector (3 downto 0);
+        g : out std_logic_vector (3 downto 0);
+        
+        board : in std_logic_vector (63 downto 0)
 );
 end component;
 
@@ -67,34 +85,102 @@ component vga_ctrl port (
 );
 end component;
 
+component board_controller port (
+        clk : in std_logic; 
+        en : in std_logic;
+        rst : in std_logic;
+        pause_sw : in std_logic;
+        kypd_btn : in std_logic_vector(15 downto 0);
+        cursor_row : out integer range 0 to 7;
+        cursor_col : out integer range 0 to 7;
+        board_out : out std_logic_vector(63 downto 0)
+);
+end component;
 
-signal en_sig : std_logic;
+component pmod_keypad generic (
+    clk_freq : integer := 50_000_000;
+    stable_time : integer := 10;
+);
+    port (
+        clk     :  IN     STD_LOGIC;
+        reset_n :  IN     STD_LOGIC;
+        rows    :  IN     STD_LOGIC_VECTOR(1 TO 4);
+        columns :  BUFFER STD_LOGIC_VECTOR(1 TO 4);
+        keys    :  OUT    STD_LOGIC_VECTOR(0 TO 15)
+);
+end component;
+
+
+-- clk div
+signal div_sig : std_logic;
+
+-- vga ctrl sigs 
+signal vs_sig : std_logic;
+signal hcount_sig : std_logic_vector (9 downto 0);
+signal vcount_sig : std_logic_vector (9 downto 0);
+signal vid_sig : std_logic;
 signal vs_sig : std_logic;
 
-signal vid_sig : std_logic;
-signal hcount_sig : std_logic_vector (9 downto 0);
+--board Controller 
+signal cursor_row_sig <= integer range 0 to 7;
+signal cursor_col_sig <= integer range 0 to 7;
+signal board_out_sig <= std_logic_vector (63 downto 0);
+
+
+--kypd 
+signal keys_sig <= std_logic_vector (15 downto 0);
 
 
 begin
 
-clk_div : clock_div port map (
-    clk => clk,
-    div => en_sig
-);
+    clk_div : clock_div port map (
+        clk => clk,
+        div => div_sig
+    );
 
-pixel : pixel_pusher port map (
 
-);
+    vga : vga_ctrl port map (
+        clk => clk,
+        en => div_sig,
+        hcount => hcount_sig,
+        vcount => vcount_sig,
+        vid => vid_sig,
+        hs => VGA_HS_O,
+        vs => vs_sig
+    );
 
-vga : vga_ctrl port map (
-    clk => clk,
-    en => en_sig,
-    hcount => hcount_sig,
-    vcount =>  ,
-    vid => vid_sig,
-    hs => vga_hs,
-    vs => vs_sig
-);
+    keypad : pmod_keypad generic (
+        clk_freq => 50_000_000;
+        stable_time => 10;
+    );
+    port map (
+        clk => clk,
+        reset_n => not sw_rst,
+        rows => kp_rows,
+        columns => kp_cols,
+        keys => keys_sig
+    );
 
-vga_vs <= vs_sig;
+    game_grid : board_controller port map (
+        clk => clk,
+        en => vs_sig,
+        rst => sw(0),
+        pause_sw => sw(1),
+        kypd_btn => keys_sig,
+        cursor_row => cursor_row_sig,
+        cursor_col => cursor_col_sig,
+        board_out => board_out_sig
+    );
+
+    pixel : game_pixels_vga port map (
+        clk => clk,
+        en => div_sig,
+        vs => vs_sig,
+        vid => vid_sig,
+        hcount => hcount_sig,
+        vcount => vcount_sig,
+        cursor_row => 
+    );
+
+    VGA_VS_O <= vs_sig;
 end Behavioral;
