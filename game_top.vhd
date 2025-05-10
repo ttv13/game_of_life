@@ -35,20 +35,15 @@ entity game_top is
   Port (signal clk : in std_logic;
         signal vga_hs : out std_logic;
         signal vga_vs : out std_logic;
-        signal vga_r : out std_logic_vector (4 downto 0);
-        signal vga_b : out std_logic_vector (4 downto 0);
-        signal vga_g : out std_logic_vector (5 downto 0)
+        signal vga_r : out std_logic_vector (3 downto 0);
+        signal vga_b : out std_logic_vector (3 downto 0);
+        signal vga_g : out std_logic_vector (3 downto 0)
   );
 end game_top;
 
 architecture Behavioral of game_top is
 
-component picture port (
-    clka : IN STD_LOGIC;
-    addra : IN STD_LOGIC_VECTOR(17 DOWNTO 0);
-    douta : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
-);
-end component;
+
 
 component clock_div port (
         clk : in std_logic;
@@ -57,16 +52,7 @@ component clock_div port (
 end component;
 
 component pixel_pusher port (
-        signal clk : in std_logic;
-        signal en : in std_logic;
-        signal vs : in std_logic;
-        signal vid : in std_logic;
-        signal pixel : in std_logic_vector (7 downto 0);
-        signal hcount : in std_logic_vector (9 downto 0);
-        signal r : out std_logic_vector (4 downto 0);
-        signal b : out std_logic_vector (4 downto 0);
-        signal g : out std_logic_vector (5 downto 0);
-        signal addr : out std_logic_vector (17 downto 0)
+
 );
 end component;
 
@@ -81,20 +67,15 @@ component vga_ctrl port (
 );
 end component;
 
-signal addr_sig : std_logic_vector (17 downto 0);
-signal douta_sig : std_logic_vector (7 downto 0);
+
 signal en_sig : std_logic;
 signal vs_sig : std_logic;
 
 signal vid_sig : std_logic;
 signal hcount_sig : std_logic_vector (9 downto 0);
-begin
 
-pic : picture port map (
-    clka => clk,
-    addra => addr_sig,
-    douta => douta_sig 
-);
+
+begin
 
 clk_div : clock_div port map (
     clk => clk,
@@ -102,23 +83,14 @@ clk_div : clock_div port map (
 );
 
 pixel : pixel_pusher port map (
-    clk => clk,
-    en => en_sig,
-    vs => vs_sig,
-    vid => vid_sig,
-    pixel => douta_sig,
-    hcount => hcount_sig,
-    r => vga_r,
-    b => vga_b,
-    g => vga_g,
-    addr => addr_sig
+
 );
 
 vga : vga_ctrl port map (
     clk => clk,
     en => en_sig,
     hcount => hcount_sig,
-    vcount => open ,
+    vcount =>  ,
     vid => vid_sig,
     hs => vga_hs,
     vs => vs_sig

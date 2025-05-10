@@ -31,7 +31,6 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 --------------------------------------------------------------------------------
--- 8 bit rgb values 
 -- outputs grid and colors cells based on board input 
 -- board updates every vs 
 -- now needs vcount to find position on screen 
@@ -49,9 +48,9 @@ entity game_pixels_vga is
         cursor_col : in integer range 0 to 7;
         pause_sw : in std_logic;
 
-        r : out std_logic_vector (7 downto 0);
-        b : out std_logic_vector (7 downto 0);
-        g : out std_logic_vector (7 downto 0);
+        r : out std_logic_vector (3 downto 0);
+        b : out std_logic_vector (3 downto 0);
+        g : out std_logic_vector (3 downto 0);
         
         board : in std_logic_vector (63 downto 0)
   );
@@ -105,9 +104,9 @@ if rising_edge (clk) then
         --Check for border lines 
         if (lx mod 41 = cell_size) or (ly mod 41 = cell_size) or lx = 0 or ly = 0 then
 
-            r <= "11111111";
-            g <= "11111111";
-            b <= "11111111";
+            r <= "1111";
+            g <= "1111";
+            b <= "1111";
 
         else --cells 
 
@@ -119,20 +118,20 @@ if rising_edge (clk) then
 
             if pause_sw = '1' and cursor_location then 
 
-                r <= "11111111";
-                g <= "00000000";
-                b <= "11111111";
+                r <= "1111";
+                g <= "0000";
+                b <= "1111";
             elsif board_sig (index) = '1' then 
-                r <= "11111111";
-                g <= "00000000";
-                b <= "00000000";
+                r <= "1111";
+                g <= "0000";
+                b <= "0000";
             else 
-                r <= "00000000";
-                g <= "00000000";
-                b <= "00000000";
+                r <= "0000";
+                g <= "0000";
+                b <= "0000";
             end if;
 
-            
+
         end if;
     else 
         r <= (others => '0');
