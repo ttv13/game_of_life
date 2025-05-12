@@ -42,7 +42,7 @@ entity game_top is
         signal VGA_G : out std_logic_vector (3 downto 0);
 
         signal kp_rows : in std_logic_vector (1 to 4);
-        signal kp_cols : inout std_logic_vector (1 to 4)
+        signal kp_cols : buffer std_logic_vector (1 to 4)
   );
 end game_top;
 
@@ -104,8 +104,8 @@ component board_controller port (
 end component;
 
 component pmod_keypad generic (
-    clk_freq : integer := 125_000_000;
-    stable_time : integer := 3
+    clk_freq : integer := 50_000_000;
+    stable_time : integer := 10
 );
     port (
         clk     :  IN     STD_LOGIC;

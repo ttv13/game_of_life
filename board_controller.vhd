@@ -153,6 +153,11 @@ board_gen : process (clk)
     variable neighbor : integer;
 begin 
 
+
+    -- edge detections 
+    btn_sig <= kypd_btn;
+    btn_edge <= btn_sig and (not kypd_btn); --Falling edge for btn (1 and not 0)
+    
 if rising_edge (clk) then 
 
     if first_start = 0 then 
@@ -163,9 +168,7 @@ if rising_edge (clk) then
         first_start <= first_start + 1;
     end if;
 
-    -- edge detections 
-    btn_sig <= kypd_btn;
-    btn_edge <= btn_sig and (not kypd_btn); --Falling edge for btn (1 and not 0)
+
 
     if rst = '1' then   
         board <= (others => (others => '0'));
