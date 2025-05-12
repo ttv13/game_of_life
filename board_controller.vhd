@@ -202,7 +202,7 @@ if rising_edge (clk) then
         
         board <= next_board;    -- update board to next board 
 
-    elsif  (en = '1' and pause_sw = '1') then -- Draw function
+    elsif  ( pause_sw = '1') then -- Draw function
         
         -- edge detections 
         btn_sig <= kypd_btn;
