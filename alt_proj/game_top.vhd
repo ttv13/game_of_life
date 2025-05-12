@@ -34,7 +34,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity game_top is
   Port (signal clk : in std_logic;
         signal sw : in std_logic_vector (1 downto 0);
-
+        signal btn : in std_logic_vector (3 downto 0);
         signal VGA_HS_O : out std_logic;
         signal VGA_VS_O : out std_logic;
         signal VGA_R : out std_logic_vector (3 downto 0);
@@ -47,6 +47,14 @@ entity game_top is
 end game_top;
 
 architecture Behavioral of game_top is
+
+
+    component lab_debounce port (
+        clk : in std_logic;
+        btn : in std_logic;
+        dbnc : out std_logic
+
+    );
 
 component clock_div port (
         clk : in std_logic;
@@ -138,8 +146,43 @@ signal board_out_sig : std_logic_vector (63 downto 0);
 signal keys_sig : std_logic_vector (15 downto 0);
 
 
+--btn 
+signal btn_w : std_logic;
+signal btn_s : std_logic;
+signal btn_a : std_logic;
+signal btn_d : std_logic;
+
+signal btn_w_dnbc : std_logic;
+signal btn_s_dnbc : std_logic;
+signal btn_a_dnbc : std_logic;
+signal btn_d_dnbc : std_logic;
 begin
 
+    up_btn : lab_debounce port map(
+        clk => clk,
+        btn => btn_w,
+        dbnc => btn_w_dnbc
+    );
+
+    down_btn : lab_debounce port map(
+        clk => clk,
+        btn => btn_s,
+        dbnc => btn_s_dnbc
+    );
+
+    left_btn : lab_debounce port map(
+        clk => clk,
+        btn => btn_a,
+        dbnc => btn_a_dnbc
+    );
+
+    right_btn : lab_debounce port map(
+        clk => clk,
+        btn => btn_d,
+        dbnc => btn_d_dnbc
+    );
+
+    
     vga_clk : clock_div port map (
         clk => clk,
         div => vga_div

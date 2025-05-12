@@ -44,6 +44,10 @@ entity board_controller is
         rst : in std_logic;
         pause_sw : in std_logic;
         kypd_btn : in std_logic_vector(15 downto 0);
+        btn_w : in std_logic;
+        btn_s : in std_logic;
+        btn_a : in std_logic;
+        btn_d : in std_logic;
         cursor_row : out integer range 0 to 7;
         cursor_col : out integer range 0 to 7;
         board_out : out std_logic_vector(63 downto 0)
@@ -177,7 +181,8 @@ if rising_edge (clk) then
         next_board <= (others => (others => '0'));
     
     elsif (en = '1' and pause_sw = '0') then -- Play computation 
- 
+        
+        btn_edge (7) <= '0';
         for i in 0 to width loop --steps through 8x8 board
             for j in 0 to width loop
 
@@ -208,23 +213,23 @@ if rising_edge (clk) then
     elsif  (en = '1' and pause_sw = '1') then -- Draw function
 
         -- moving cursor 
-        if btn_edge (6) = '1' then --2 up 
+        if btn_w = '1' then --2 up 
 
             draw_row <= wrap (draw_row - 1);
 
-        elsif btn_edge (1) = '1' then -- E down 
+        elsif btn_s = '1' then -- E down 
             draw_row <= wrap (draw_row + 1);
         end if;
 
-        if btn_edge (0) = '1' then -- F left
+        if btn_a = '1' then -- F left
 
             draw_col <= wrap (draw_col - 1);
 
-        elsif btn_edge (2) = '1' then -- D right 
+        elsif btn_d = '1' then -- D right 
             draw_col <= wrap (draw_col + 1);
         end if;
 
-        if btn_edge (7) = '1' then -- 1 toggle 
+        if btn_edge (7) = '1' then -- 8 toggle 
 
             board (draw_row) (draw_col) <= not board (draw_row) (draw_col);
         end if;
