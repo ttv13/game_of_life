@@ -47,7 +47,7 @@ component game_top port (
     VGA_G : out std_logic_vector (3 downto 0);
 
     kp_rows : in std_logic_vector (1 to 4);
-    kp_cols : std_logic_vector (1 to 4)
+    kp_cols : buffer std_logic_vector (1 to 4)
 );
 end component;
 
@@ -60,7 +60,7 @@ signal VGA_R : std_logic_vector (3 downto 0);
 signal VGA_B : std_logic_vector (3 downto 0);
 signal VGA_G : std_logic_vector (3 downto 0);
 signal kp_rows : std_logic_vector (1 to 4) := (others => '1');
-signal kp_cols : inout std_logic_vector (1 to 4) := (others => '1');
+signal kp_cols : std_logic_vector (1 to 4) := (others => '1');
 begin
 
 dut : game_top port map (
@@ -86,8 +86,7 @@ end process clock;
 
 sim : process begin 
 
-    sw(0) <= '1';
-    wait for 100 ns;
+   
     sw (0) <=  '0';
 
     sw (1) <=  '0';

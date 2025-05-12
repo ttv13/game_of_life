@@ -132,6 +132,9 @@ begin
 end function;
 
     signal first_start : integer := 0;
+
+    signal board_flat_sig : std_logic_vector(63 downto 0) := (others => '0');
+
 --------------------------------------------------------------------------------
 -- o o o o o o o o
 -- o o o o o o o o
@@ -146,7 +149,7 @@ begin
 
     cursor_row <= draw_row;
     cursor_col <= draw_col;
-
+    board_out <= board_flat_sig;
 
 board_gen : process (clk) 
 
@@ -157,11 +160,10 @@ begin
     -- edge detections 
     btn_sig <= kypd_btn;
     btn_edge <= btn_sig and (not kypd_btn); --Falling edge for btn (1 and not 0)
-    
+
 if rising_edge (clk) then 
 
     if first_start = 0 then 
-        board_out <= (others => '0');
         board (2) (2) <= '1';
         board (3) (2) <= '1';
         board (4) (2) <= '1';
@@ -206,23 +208,23 @@ if rising_edge (clk) then
     elsif  (en = '1' and pause_sw = '1') then -- Draw function
 
         -- moving cursor 
-        if kypd_btn (6) = '1' then --2 up 
+        if btn_edge (6) = '1' then --2 up 
 
             draw_row <= wrap (draw_row - 1);
 
-        elsif kypd_btn (1) = '1' then -- E down 
+        elsif btn_edge (1) = '1' then -- E down 
             draw_row <= wrap (draw_row + 1);
         end if;
 
-        if kypd_btn (0) = '1' then -- F left
+        if btn_edge (0) = '1' then -- F left
 
             draw_col <= wrap (draw_col - 1);
 
-        elsif kypd_btn (2) = '1' then -- D right 
+        elsif btn_edge (2) = '1' then -- D right 
             draw_col <= wrap (draw_col + 1);
         end if;
 
-        if kypd_btn (7) = '1' then -- 1 toggle 
+        if btn_edge (7) = '1' then -- 1 toggle 
 
             board (draw_row) (draw_col) <= not board (draw_row) (draw_col);
         end if;
@@ -238,7 +240,7 @@ board_flat : process (board) begin
 for i in 0 to width loop
     for j in 0 to width loop 
 
-        board_out (i*8 + j) <= board (i)(j);
+        board_flat_sig (i*8 + j) <= board (i)(j);
     end loop;
 end loop;
 

@@ -62,21 +62,26 @@ architecture Behavioral of game_pixels_vga is
 
     -- o|o|o|o|o|o|o| --8 cells 
     -- |o|o|o|o|o|o|o| --8 cells 
-    constant cell_size : integer := 40; -- 40x40 px
+    constant cell_size : integer := 31; -- 40x40 px => 31
     constant border_size : integer := 1;
-    constant board_length : integer := 329; -- 41 * 8 + 1 px side lengths of board 
+    constant board_length : integer := 257; -- 41 * 8 + 1 px side lengths of board  => 32*8+1
 
-    constant x_start : integer := (640 - board_length) / 2; -- 155
-    constant y_start : integer := (480 - board_length) / 2; -- 75
+    constant x_start : integer := (640 - board_length) / 2; -- 191.5
+    constant y_start : integer := (480 - board_length) / 2; -- 111.5
 
-    constant x_end : integer := x_start + board_length - 1; -- 483
-    constant y_end : integer := y_start + board_length - 1; -- 403
+    constant x_end : integer := x_start + board_length ; -- 448.5
+    constant y_end : integer := y_start + board_length; -- 368.5
 
     signal board_selector : std_logic := '0';
 
     type board_type  is array (0 to 1) of std_logic_vector (63 downto 0);
     signal board_ar : board_type := (others => (others => '0'));
 
+
+    signal index_sig : integer;
+    signal row_sig : integer;
+    signal col_sig : integer;
+    
 begin
 
 buffer_select : process (board_selector) begin 
@@ -100,30 +105,32 @@ process (clk)
     variable index : integer;
     variable cursor_location : boolean;
 begin 
-
+    
 if rising_edge (clk) then 
-
-    if (en = '1' and vid = '1' and unsigned (hcount) >= x_start and unsigned(vcount) >= y_start and unsigned(hcount) <= x_end and unsigned(vcount) <= y_end) then --if currently in grid area 
+    
+    if (en = '1' and vid = '1' and unsigned (hcount) >= x_start and unsigned(vcount) >= y_start and unsigned(hcount) < x_end and unsigned(vcount) < y_end) then --if currently in grid area 
         
         --find local coordinates 
-        lx := to_integer (unsigned (hcount)) - x_start; -- 0-328
-        ly := to_integer (unsigned (vcount)) - y_start; -- 0-328
-
+        lx := to_integer (unsigned (hcount)) - x_start; -- 0-256.5
+        ly := to_integer (unsigned (vcount)) - y_start; -- 0-256.5
+        
         --Check for border lines 
-        if (lx mod 41 = cell_size) or (ly mod 41 = cell_size) or lx = 0 or ly = 0 then
+        if (lx mod 32 = cell_size) or (ly mod 32 = cell_size) or (lx = 0) or (ly = 0) or (lx = board_length - 1) or (ly = board_length - 1)  then
 
             r <= "1111";
             g <= "1111";
             b <= "1111";
 
         else --cells 
-
-            col := lx / 41;
-            row  := ly / 41;
-            index := row * 8 + col;
+            
+            col := to_integer (shift_right (to_unsigned (lx, 10), 5));
+            row  := to_integer (shift_right (to_unsigned (ly, 10), 5));
+            index := row * 8 + col; 
             cursor_location := (row = cursor_row) and (col  = cursor_col);
 
-
+            col_sig <= col;
+            index_sig <= index;
+            row_sig <= row;
             if pause_sw = '1' and cursor_location then 
 
                 r <= "1111";
