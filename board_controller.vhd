@@ -40,7 +40,7 @@ use IEEE.NUMERIC_STD.ALL;
 --------------------------------------------------------------------------------
 entity board_controller is
   Port (clk : in std_logic; 
-        en : in std_logic; -- tie it to vs in vga so board gets updated and sent to vga once frame is ready 
+        en : in std_logic;
         rst : in std_logic;
         pause_sw : in std_logic;
         kypd_btn : in std_logic_vector(15 downto 0);
@@ -58,7 +58,7 @@ architecture Behavioral of board_controller is
     signal board : board_type := (others => (others => '0'));
     signal next_board : board_type := (others => (others => '0'));
 
-    signal vs_sig , vs_en : std_logic;
+    signal btn_sig, btn_edge : std_logic_vector (15 downto 0);
 
     signal  draw_row, draw_col : integer range 0 to width := 0;
     
@@ -131,11 +131,22 @@ begin
     return count;
 end function;
 
-signal first_start : integer := 0;
+    signal first_start : integer := 0;
+--------------------------------------------------------------------------------
+-- o o o o o o o o
+-- o o o o o o o o
+-- o o 1 o o o o o
+-- o o 1 o o o o o
+-- o o 1 o o o o o
+-- o o o o o o o o
+-- o o o o o o o o
+-- o o o o o o o o
+--------------------------------------------------------------------------------
 begin
 
     cursor_row <= draw_row;
     cursor_col <= draw_col;
+
 
 board_gen : process (clk) 
 
@@ -145,19 +156,22 @@ begin
 if rising_edge (clk) then 
 
     if first_start = 0 then 
-        board_out <= (others => '0');
+        -- board_out <= (others => '0');
+        board (2) (2) <= '1';
+        board (3) (2) <= '1';
+        board (4) (2) <= '1';
         first_start <= first_start + 1;
     end if;
 
     -- edge detections 
-    vs_sig <= en;
-    vs_en <= vs_sig and (not en); --Falling edge for vs (1 and not 0)
+    btn_sig <= kypd_btn;
+    btn_edge <= btn_sig and (not kypd_btn); --Falling edge for btn (1 and not 0)
 
     if rst = '1' then   
         board <= (others => (others => '0'));
         next_board <= (others => (others => '0'));
     
-    elsif (vs_en = '1' and pause_sw = '0') then -- Play computation 
+    elsif (en = '1' and pause_sw = '0') then -- Play computation 
  
         for i in 0 to width loop --steps through 8x8 board
             for j in 0 to width loop
@@ -186,7 +200,7 @@ if rising_edge (clk) then
         
         board <= next_board;    -- update board to next board 
 
-    elsif  (vs_en = '1' and pause_sw = '1') then -- Draw function
+    elsif  (en = '1' and pause_sw = '1') then -- Draw function
 
         -- moving cursor 
         if kypd_btn (6) = '1' then --2 up 

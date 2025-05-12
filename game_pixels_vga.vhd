@@ -120,7 +120,7 @@ if rising_edge (clk) then
 
             col := lx / 41;
             row  := ly / 41;
-            index := row * 8;
+            index := row * 8 + col;
             cursor_location := (row = cursor_row) and (col  = cursor_col);
 
 

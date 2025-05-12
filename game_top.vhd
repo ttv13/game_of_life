@@ -54,6 +54,12 @@ component clock_div port (
 );
 end component;
 
+component game_clock_div port (
+        clk : in std_logic;
+        div : out std_logic
+);
+end component;
+
 component game_pixels_vga port (
         clk : in std_logic;
         en : in std_logic;
@@ -112,7 +118,8 @@ end component;
 
 
 -- clk div
-signal div_sig : std_logic;
+signal vga_div : std_logic;
+signal game_div : std_logic;
 
 -- vga ctrl sigs 
 signal vs_sig : std_logic;
@@ -133,15 +140,19 @@ signal keys_sig : std_logic_vector (15 downto 0);
 
 begin
 
-    clk_div : clock_div port map (
+    vga_clk : clock_div port map (
         clk => clk,
-        div => div_sig
+        div => vga_div
     );
 
+    game_clk : game_clock_div port map(
+        clk => clk,
+        div => game_div
+    );
 
     vga : vga_ctrl port map (
         clk => clk,
-        en => div_sig,
+        en => vga_div,
         hcount => hcount_sig,
         vcount => vcount_sig,
         vid => vid_sig,
@@ -174,7 +185,7 @@ begin
 
     pixel : game_pixels_vga port map (
         clk => clk,
-        en => div_sig,
+        en => game_div,
         vs => vs_sig,
         vid => vid_sig,
         hcount => hcount_sig,
