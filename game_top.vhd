@@ -174,7 +174,7 @@ begin
 
     game_grid : board_controller port map (
         clk => clk,
-        en => vs_sig,
+        en => game_div,
         rst => sw(0),
         pause_sw => sw(1),
         kypd_btn => keys_sig,
@@ -185,7 +185,7 @@ begin
 
     pixel : game_pixels_vga port map (
         clk => clk,
-        en => game_div,
+        en => vga_div,
         vs => vs_sig,
         vid => vid_sig,
         hcount => hcount_sig,

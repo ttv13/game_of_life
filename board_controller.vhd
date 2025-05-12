@@ -156,7 +156,7 @@ begin
 if rising_edge (clk) then 
 
     if first_start = 0 then 
-        -- board_out <= (others => '0');
+        board_out <= (others => '0');
         board (2) (2) <= '1';
         board (3) (2) <= '1';
         board (4) (2) <= '1';
@@ -235,7 +235,7 @@ board_flat : process (board) begin
 for i in 0 to width loop
     for j in 0 to width loop 
 
-        board_out (i*width + j) <= board (i)(j);
+        board_out (i*8 + j) <= board (i)(j);
     end loop;
 end loop;
 
