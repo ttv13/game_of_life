@@ -161,8 +161,8 @@ begin
     );
 
     keypad : pmod_keypad generic map (
-        clk_freq => 125_000_000,
-        stable_time => 3
+        clk_freq => 50_000_000,
+        stable_time => 10
     )
     port map (
         clk => clk,
