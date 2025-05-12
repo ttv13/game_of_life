@@ -25,8 +25,8 @@ USE ieee.std_logic_1164.all;
 
 ENTITY pmod_keypad IS
   GENERIC(
-    clk_freq    : INTEGER := 50_000_000;  --system clock frequency in Hz
-    stable_time : INTEGER := 10);         --time pressed key must remain stable in ms
+    clk_freq    : INTEGER := 125_000_000;  --system clock frequency in Hz
+    stable_time : INTEGER := 3);         --time pressed key must remain stable in ms
   PORT(
     clk     :  IN     STD_LOGIC;                           --system clock
     reset_n :  IN     STD_LOGIC;                           --asynchornous active-low reset

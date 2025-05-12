@@ -149,6 +149,7 @@ if rising_edge (clk) then
         first_start <= first_start + 1;
     end if;
 
+    -- edge detections 
     vs_sig <= en;
     vs_en <= vs_sig and (not en); --Falling edge for vs (1 and not 0)
 
